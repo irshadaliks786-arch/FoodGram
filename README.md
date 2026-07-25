@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # FoodGram 🍔
 
 Instagram + MyFitnessPal ka mix — food photos share karo, nutrition (calories/protein/carbs/fat) flex karo.
@@ -84,3 +85,7 @@ foodgram/
 - Deploy free on Render/Railway (PostgreSQL free tier)
 - Add pagination to the feed for many posts
 - Add profile pictures / bio
+=======
+# FoodGram
+FoodGram is a Django-based social platform for sharing food photos along with nutrition details such as calories, protein, carbs, and fat. Users can sign up, log in, upload food posts, like and comment on posts, view profiles, and track total calories shared.
+>>>>>>> 0cf4324f3cf2483790d9dc8d22d19232bc1ba9ee
