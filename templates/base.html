@@ -1,0 +1,458 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FoodGram{% endblock %}</title>
+    <style>
+        /* ===== Reset & Base ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #fafafa;
+            --card-bg: #ffffff;
+            --border: #e5e5e5;
+            --text-dark: #262626;
+            --text-muted: #8e8e8e;
+            --accent: #ff6b35;
+            --accent-dark: #e85a2a;
+            --like-red: #ed4956;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* ===== Navbar ===== */
+        .navbar {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-inner {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), #ffa62b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .nav-links a {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-dark);
+            transition: opacity 0.15s;
+        }
+
+        .nav-links a:hover { opacity: 0.6; }
+
+        .nav-links .upload-btn {
+            background: var(--accent);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .nav-links .upload-btn:hover {
+            background: var(--accent-dark);
+            opacity: 1;
+        }
+
+        /* ===== Page Container ===== */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 24px 16px 60px;
+        }
+
+        /* ===== Card (shared by feed + profile) ===== */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 24px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 16px;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #ffa62b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .card-header .username {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .card-header .food-name {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .card-image {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            display: block;
+            background: #f0f0f0;
+        }
+
+        .card-body {
+            padding: 12px 16px 6px;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 22px;
+            padding: 4px;
+            color: var(--text-dark);
+            transition: transform 0.1s;
+        }
+
+        .action-btn:hover { transform: scale(1.1); }
+        .action-btn.liked { color: var(--like-red); }
+
+        .like-count {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .caption {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .caption .username { font-weight: 600; margin-right: 6px; }
+
+        /* ===== Nutrition badges ===== */
+        .nutrition {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .badge {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        .badge.calories { background: #fff1e6; color: #e85a2a; }
+        .badge.protein  { background: #e8f5e9; color: #2e7d32; }
+        .badge.carbs    { background: #e3f2fd; color: #1565c0; }
+        .badge.fat      { background: #fce4ec; color: #ad1457; }
+
+        /* ===== Comments ===== */
+        .comments {
+            border-top: 1px solid var(--border);
+            padding: 10px 16px;
+        }
+
+        .comment {
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .comment .username { font-weight: 600; margin-right: 6px; }
+
+        .comment-form {
+            display: flex;
+            gap: 8px;
+            padding: 10px 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .comment-form input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            padding: 6px 0;
+        }
+
+        .comment-form button {
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .comment-form button:hover { color: var(--accent-dark); }
+
+        /* ===== Forms (upload / signup) ===== */
+        .form-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .form-card h2 {
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-dark);
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="password"],
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .nutrient-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .submit-btn:hover { background: var(--accent-dark); }
+
+        .nutrition-btn {
+            margin-top: 8px;
+            background: #fff;
+            border: 1.5px solid var(--accent);
+            color: var(--accent);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .nutrition-btn:hover { background: #fff1e6; }
+        .nutrition-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .nutrition-status {
+            font-size: 12px;
+            margin-top: 8px;
+            min-height: 14px;
+        }
+
+        .nutrition-status.loading { color: var(--text-muted); }
+        .nutrition-status.success { color: #2e7d32; }
+        .nutrition-status.error { color: var(--like-red); }
+
+        .form-footer {
+            text-align: center;
+            font-size: 13px;
+            margin-top: 16px;
+            color: var(--text-muted);
+        }
+
+        .form-footer a {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .errorlist {
+            list-style: none;
+            color: var(--like-red);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        /* ===== Profile ===== */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 24px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #ffa62b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: 32px;
+            flex-shrink: 0;
+        }
+
+        .profile-info h2 { font-size: 20px; margin-bottom: 8px; }
+
+        .profile-stats {
+            display: flex;
+            gap: 24px;
+        }
+
+        .profile-stats .stat strong {
+            display: block;
+            font-size: 18px;
+        }
+
+        .profile-stats .stat span {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+        }
+
+        .profile-grid img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .messages { max-width: 600px; margin: 16px auto 0; padding: 0 16px; }
+        .messages li {
+            list-style: none;
+            background: #fff1e6;
+            color: var(--accent-dark);
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-inner">
+            <a href="{% url 'feed' %}" class="logo">FoodGram</a>
+            <div class="nav-links">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'feed' %}">Feed</a>
+                    <a href="{% url 'my_profile' %}">Profile</a>
+                    <a href="{% url 'upload_post' %}" class="upload-btn">+ Upload</a>
+                    <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" style="background:none;border:none;cursor:pointer;font:inherit;color:var(--text-dark);">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}">Login</a>
+                    <a href="{% url 'signup' %}" class="upload-btn">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+</body>
+</html>

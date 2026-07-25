@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Sign Up - FoodGram{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h2>🚀 Join FoodGram</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+                <small style="color:var(--text-muted); font-size:11px;">{{ field.help_text }}</small>
+            {% endif %}
+            {{ field.errors }}
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="submit-btn">Create Account</button>
+    </form>
+
+    <div class="form-footer">
+        Already have an account? <a href="{% url 'login' %}">Login</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Login - FoodGram{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h2>👋 Welcome Back</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {{ field.errors }}
+        </div>
+        {% endfor %}
+        <button type="submit" class="submit-btn">Login</button>
+    </form>
+
+    <div class="form-footer">
+        New here? <a href="{% url 'signup' %}">Create an account</a>
+    </div>
+</div>
+{% endblock %}

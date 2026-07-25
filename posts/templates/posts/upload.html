@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Upload - FoodGram{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h2>🍔 Flex Your Food</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="{{ form.image.id_for_label }}">Photo</label>
+            {{ form.image }}
+            {{ form.image.errors }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.food_name.id_for_label }}">Food Name</label>
+            {{ form.food_name }}
+            {{ form.food_name.errors }}
+            <button type="button" id="get-nutrition-btn" class="nutrition-btn">🔍 Get Nutrition</button>
+            <div id="nutrition-status"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.caption.id_for_label }}">Caption</label>
+            {{ form.caption }}
+            {{ form.caption.errors }}
+        </div>
+
+        <div class="nutrient-row">
+            <div class="form-group">
+                <label for="{{ form.calories.id_for_label }}">Calories (kcal)</label>
+                {{ form.calories }}
+                {{ form.calories.errors }}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.protein.id_for_label }}">Protein (g)</label>
+                {{ form.protein }}
+                {{ form.protein.errors }}
+            </div>
+        </div>
+
+        <div class="nutrient-row">
+            <div class="form-group">
+                <label for="{{ form.carbs.id_for_label }}">Carbs (g)</label>
+                {{ form.carbs }}
+                {{ form.carbs.errors }}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.fat.id_for_label }}">Fat (g)</label>
+                {{ form.fat }}
+                {{ form.fat.errors }}
+            </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Post It 🚀</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('get-nutrition-btn').addEventListener('click', function () {
+        const foodNameInput = document.getElementById('{{ form.food_name.id_for_label }}');
+        const statusBox = document.getElementById('nutrition-status');
+        const foodName = foodNameInput.value.trim();
+
+        if (!foodName) {
+            statusBox.textContent = 'Pehle food name likho.';
+            statusBox.className = 'nutrition-status error';
+            return;
+        }
+
+        statusBox.textContent = 'Nutrition dhoondh rahe hain...';
+        statusBox.className = 'nutrition-status loading';
+
+        fetch(`{% url 'fetch_nutrition' %}?food_name=${encodeURIComponent(foodName)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('{{ form.calories.id_for_label }}').value = data.calories;
+                    document.getElementById('{{ form.protein.id_for_label }}').value = data.protein;
+                    document.getElementById('{{ form.carbs.id_for_label }}').value = data.carbs;
+                    document.getElementById('{{ form.fat.id_for_label }}').value = data.fat;
+
+                    statusBox.textContent = `✅ "${data.product_name}" ke liye mil gaya (per 100g) — zaroorat pade toh edit kar le.`;
+                    statusBox.className = 'nutrition-status success';
+                } else {
+                    statusBox.textContent = `⚠️ ${data.error}`;
+                    statusBox.className = 'nutrition-status error';
+                }
+            })
+            .catch(() => {
+                statusBox.textContent = '⚠️ Kuch gadbad ho gayi. Manually daal de.';
+                statusBox.className = 'nutrition-status error';
+            });
+    });
+</script>
+{% endblock %}

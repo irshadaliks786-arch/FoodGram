@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ profile_user.username }} - FoodGram{% endblock %}
+
+{% block content %}
+
+<div class="profile-header">
+    <div class="profile-avatar">{{ profile_user.username|slice:":1"|upper }}</div>
+    <div class="profile-info">
+        <h2>{{ profile_user.username }}</h2>
+        <div class="profile-stats">
+            <div class="stat">
+                <strong>{{ total_posts }}</strong>
+                <span>Posts</span>
+            </div>
+            <div class="stat">
+                <strong>{{ total_calories|floatformat:0 }}</strong>
+                <span>Calories Flexed 🔥</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if posts %}
+    <div class="profile-grid">
+        {% for post in posts %}
+            {% if post.image %}
+                <img src="{{ post.image.url }}" alt="{{ post.food_name }}" title="{{ post.food_name }} - {{ post.calories|floatformat:0 }} kcal">
+            {% endif %}
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <p style="font-size:40px; margin-bottom:12px;">📸</p>
+        <p>Abhi koi post nahi hai.</p>
+    </div>
+{% endif %}
+
+{% endblock %}
