@@ -2,7 +2,6 @@
 
 Instagram + MyFitnessPal ka mix. Share your food photos, flex your nutrition, and let the world see what you're eating — calories, protein, carbs, and fat included.
 
-
 ✨ Features
 📸 Upload food photos with captions
 🔥 Auto nutrition detection — just type the food name and hit "Get Nutrition" to pull calories, protein, carbs, and fat from Open Food Facts (free, no API key needed)
@@ -90,5 +89,3 @@ This project is open source and available under the MIT License.
 🙌 Acknowledgements
 Open Food Facts for free nutrition data
 Built with Django
-FoodGram is a Django-based social platform for sharing food photos along with nutrition details such as calories, protein, carbs, and fat. Users can sign up, log in, upload food posts, like and comment on posts, view profiles, and track total calories shared.
->>>>>>> 0cf4324f3cf2483790d9dc8d22d19232bc1ba9ee
